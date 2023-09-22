@@ -1,5 +1,6 @@
 package com.hw.bicyclepolicyrestservice.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,15 +35,15 @@ import lombok.Setter;
 "premium": 48.95
  */
 
-public class InsuredObjects {
+public class InsuredObject {
 	
 	@Getter
 	@Setter
-	private Map<String, Object> atributes;
+	private Map<String, Object> attributes = new HashMap<String, Object>();
 	
 	@Getter
 	@Setter
-	private String coverageType;
+	private CoverageType coverageType;
 	
 	@Getter
 	@Setter
@@ -57,4 +58,7 @@ public class InsuredObjects {
 	private double premium;
 	
 
+	public void addAttribute(String key, Object value) {
+		attributes.put(key, value);
+	}
 }

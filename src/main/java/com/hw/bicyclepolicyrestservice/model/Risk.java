@@ -1,27 +1,14 @@
 package com.hw.bicyclepolicyrestservice.model;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 
-/*
-{
-    "riskType": "THEFT",
-    "sumInsured": 1000.00,
-    "premium": 30.00
-}
- */
-
 public class Risk {
-	
-	public enum Type {
-		THEFT,
-		DAMAGE,
-		THIRD_PARTY_DAMAGE
-	}
 	
 	@Getter
 	@Setter
-	private Type riskType = Type.THEFT;
+	private RiskType riskType = RiskType.THEFT;
 	
 	@Getter
 	@Setter
@@ -31,14 +18,22 @@ public class Risk {
 	@Setter
 	private double premium;
 	
+	public Risk(RiskType riskType) {
+		this.riskType = riskType;
+	}
+	
 	public Risk(String riskTypeString) {
 		try {
-			this.riskType = Type.valueOf(riskTypeString);
+			this.riskType = RiskType.valueOf(riskTypeString);
 		} catch (IllegalArgumentException e) {
 			// should not normally occur because of validation
-		    System.out.println("Invalid enum string for Risk: " + riskTypeString + "! Set default: \"THEFT\"");
-		    this.riskType = Type.THEFT;
+		    System.out.println("Invalid risk type string for Risk: " + riskTypeString + "! Set default: \"THEFT\"");
+		    this.riskType = RiskType.THEFT;
 		}
+	}
+	
+	public static Risk ofType(RiskType riskType) {
+		return new Risk(riskType);
 	}
 	
 	@Override

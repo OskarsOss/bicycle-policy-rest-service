@@ -1,5 +1,6 @@
 package com.hw.bicyclepolicyrestservice.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -9,7 +10,7 @@ public class PremiumResponse {
 	
 	@Getter
 	@Setter
-	private List<InsuredObjects> objects;
+	private List<InsuredObject> objects = new ArrayList<InsuredObject>();
 	
 	@Getter
 	@Setter
