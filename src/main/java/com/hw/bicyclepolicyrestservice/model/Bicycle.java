@@ -2,10 +2,7 @@ package com.hw.bicyclepolicyrestservice.model;
 
 import java.util.List;
 
-import org.springframework.validation.annotation.Validated;
-
 import com.hw.bicyclepolicyrestservice.validation.NotOlderThan;
-import com.hw.bicyclepolicyrestservice.validation.ValidRisk;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -43,6 +40,6 @@ public class Bicycle {
 	
 	@Getter
 	@Setter
-	private List<@ValidRisk String> risks = List.of( RiskType.THEFT.name() );
+	private List<String> risks = List.of( "THEFT" );
 
 }
