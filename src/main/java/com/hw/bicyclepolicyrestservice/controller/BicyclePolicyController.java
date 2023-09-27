@@ -27,7 +27,7 @@ public class BicyclePolicyController {
 	@RequestMapping(value = "/calculate", method = RequestMethod.POST)
 	public ResponseEntity<Object> calculate(@Valid @RequestBody PremiumRequest request) {
 		PremiumResponse response = service.calculatePremium(request.getBicycles());
-		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 }
