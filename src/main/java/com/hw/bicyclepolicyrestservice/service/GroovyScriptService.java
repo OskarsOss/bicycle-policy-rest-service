@@ -1,36 +1,44 @@
 package com.hw.bicyclepolicyrestservice.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URL;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import groovy.lang.GroovyClassLoader;
+import com.hw.bicyclepolicyrestservice.model.Risk;
+
 import groovy.lang.GroovyObject;
+import groovy.util.GroovyScriptEngine;
 
 @Service
 public class GroovyScriptService {
-	// TODO pass object
-    public String runGroovyScript() {
+	
+	@Value("${scripts_location:src/main/resources/scripts}")
+	private String scriptsLocation; 
+	
+    public Risk runRiskCalculationScript(Map<String, Object> args) {
         try {
-            GroovyClassLoader classLoader = new GroovyClassLoader();
-            String risk = "damage";
-            Class<?> groovyClass = classLoader.parseClass(new File("G:\\DEV\\homework\\bicycle-policy-rest-service\\src\\main\\resources\\risk_"+risk+".groovy"));
-
-            // Instantiate the Groovy class
-            GroovyObject groovyObject = (GroovyObject) groovyClass.getDeclaredConstructor().newInstance();
-
-            // Call the function defined in the script
-            Object[] arguments = {2200, 13, "Whyte", "T-160 RS"}; // TODO remove (from args)
-            Object result = groovyObject.invokeMethod("calculatePremium", arguments);
-            
-            
-            System.out.println(risk + " premium: "+ (double)result);
-
-            return result.toString();
+        	         
+            String riskType = (String) args.get("riskType");
+        	
+        	URL scriptsUrl = new File(scriptsLocation).toURI().toURL();
+        	
+        	GroovyScriptEngine engine = new GroovyScriptEngine(new URL[] {scriptsUrl}, this.getClass().getClassLoader());
+        	
+        	Class<?> calcClass = engine.loadScriptByName("risk_"+ riskType.toLowerCase() +".groovy");
+            GroovyObject scriptInstance = (GroovyObject) calcClass.getDeclaredConstructor().newInstance();
+        	
+        	double premiumResult = (double) scriptInstance.invokeMethod("calculatePremium", new Object[] {args});
+        	double sumInsuredResult = (double) scriptInstance.invokeMethod("calculateSumInsured", new Object[] {args.get("sumInsured")});
+            return new Risk(riskType, premiumResult, sumInsuredResult);
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error running Groovy script: " + e.getMessage();
+            System.out.println("risk calculation failed - " + e.getMessage());
+            return null;
         }
     }
+       
 }

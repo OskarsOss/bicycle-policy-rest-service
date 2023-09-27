@@ -21,6 +21,12 @@ public class Risk {
 		this.riskType = riskType;
 	}
 	
+	public Risk(String riskType, double premium, double sumInsured) {
+		this.riskType = riskType;
+		this.premium = premium;
+		this.sumInsured = sumInsured;
+	}
+	
 	@Override
     public String toString() {
         return riskType;

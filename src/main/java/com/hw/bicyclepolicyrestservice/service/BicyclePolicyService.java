@@ -1,8 +1,12 @@
 package com.hw.bicyclepolicyrestservice.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hw.bicyclepolicyrestservice.model.Bicycle;
@@ -13,53 +17,56 @@ import com.hw.bicyclepolicyrestservice.model.Risk;
 @Service
 public class BicyclePolicyService {
 	
+	private final GroovyScriptService groovyService;
+
+	@Autowired
+	public BicyclePolicyService(GroovyScriptService groovyService) {
+		this.groovyService = groovyService;
+	}
+	
 	public PremiumResponse calculatePremium(List<Bicycle> bicycles) {
-		
-		PremiumResponse result = new PremiumResponse();
-		
-		// TODO
-		double totalPremium = 99.19;
+		double totalPremium = 0;
 		List<InsuredObject> insuredObjects = new ArrayList<InsuredObject>();
 		
 		for (Bicycle bicycle : bicycles) {			
-			InsuredObject insuredObject = new InsuredObject();
-			insuredObject.setCoverageType(bicycle.getCoverage());
-			insuredObject.setSumInsured(bicycle.getSumInsured());
-			insuredObject.addAttribute("MANUFACTURE_YEAR", bicycle.getManufactureYear());
-			insuredObject.addAttribute("MODEL", bicycle.getModel());
-			insuredObject.addAttribute("MAKE", bicycle.getMake());
-			
 			List<Risk> risks = new ArrayList<Risk>();
 			double calculatedPremium = 0;
+			
 			for (String riskName : bicycle.getRisks()) {
-				Risk risk = new Risk(riskName);
+				Map<String, Object> args = getRiskCalculationArgs(riskName, bicycle);
+				Risk risk = groovyService.runRiskCalculationScript(args);
+				if (risk == null ) {
+					throw new RuntimeException("failed calculations for risk: " + args.get("riskType"));
+				}
 				
-				double riskPremium = 0;
-				double riskSumInsured = 0;
-				// TODO call groovy calculations
-				
-				risk.setSumInsured(riskSumInsured);
-				risk.setPremium(riskPremium);
 				risks.add(risk);
-				
-				calculatedPremium += riskPremium;
+				calculatedPremium += risk.getPremium();
 			}
 			
-			
+			InsuredObject insuredObject = new InsuredObject(bicycle);
 			insuredObject.setPremium(calculatedPremium);
 			insuredObject.setRisks(risks);
-			
-			
-			
+
 			insuredObjects.add(insuredObject);
-			
 			totalPremium += calculatedPremium;
 		}
 		
-		result.setObjects(insuredObjects);
-		result.setPremium(totalPremium);
-		
-		return result;
+		return new PremiumResponse(insuredObjects, totalPremium);
+	}
+	
+	private Map<String, Object> getRiskCalculationArgs(String riskName, Bicycle bicycle) {
+		Map<String, Object> args = new HashMap<String, Object>();
+        args.put("riskType", riskName);
+        args.put("sumInsured", bicycle.getSumInsured());
+        args.put("age", getAge(bicycle.getManufactureYear()));
+        args.put("make", bicycle.getMake());
+        args.put("model", bicycle.getModel());
+        args.put("riskCount", bicycle.getRisks().size());
+        return args;
+	}
+	
+	private int getAge(int manufactureYear) {
+		return LocalDate.now().getYear() - manufactureYear;
 	}
 
 }
