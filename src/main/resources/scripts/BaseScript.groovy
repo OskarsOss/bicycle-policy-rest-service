@@ -1,3 +1,5 @@
+package scripts;
+
 class BaseScript extends Script {
 
 	@Override
