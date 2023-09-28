@@ -1,5 +1,7 @@
 package com.hw.bicyclepolicyrestservice.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,16 @@ public class BicyclePolicyController {
 		this.service = service;
 	}
 	
+	private final static Logger logger = LoggerFactory.getLogger(BicyclePolicyController.class);
+	
+    /**
+    * Calculates insurance details for the provided bicycles.
+    * @param request the details of the bicycles
+    * @return insurance details for the bicycles and associated risks
+    */
 	@RequestMapping(value = "/calculate", method = RequestMethod.POST)
 	public ResponseEntity<Object> calculate(@Valid @RequestBody PremiumRequest request) {
+		logger.info("calling POST on /calculate");
 		PremiumResponse response = service.calculatePremium(request.getBicycles());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

@@ -1,8 +1,10 @@
 package com.hw.bicyclepolicyrestservice.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 public class Risk {
 	
 	@Getter
@@ -16,10 +18,6 @@ public class Risk {
 	@Getter
 	@Setter
 	private double premium;
-	
-	public Risk(String riskType) {
-		this.riskType = riskType;
-	}
 	
 	public Risk(String riskType, double premium, double sumInsured) {
 		this.riskType = riskType;

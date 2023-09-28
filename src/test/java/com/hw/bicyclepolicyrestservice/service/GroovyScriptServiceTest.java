@@ -2,6 +2,7 @@ package com.hw.bicyclepolicyrestservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap;
 
@@ -35,4 +36,15 @@ public class GroovyScriptServiceTest {
 		assertEquals(testRisk.getPremium(), 42);
 		assertEquals(testRisk.getSumInsured(), 222 + 1);
 	}
+	
+	@Test
+	public void givenInvalidRiskName_whenRunRiskCalculationScript_thenReturnNull() throws Exception {
+		HashMap<String, Object> args = new HashMap<String, Object>();
+		args.put("riskType", "FAIL");
+		
+		Risk testRisk = service.runRiskCalculationScript(args);
+	
+		assertNull(testRisk);
+	}
+	
 }
